@@ -21,8 +21,8 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `vdbench_filesystem`;
 CREATE TABLE `vdbench_filesystem` (
   `Id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `Datetime` datetime DEFAULT NULL,
-  `Outputinterval` int(255) DEFAULT NULL,
+  `DateTime` datetime DEFAULT NULL,
+  `OutputInterval` int(255) DEFAULT NULL,
   `ReqstdOpsRate` double(255,3) DEFAULT NULL,
   `ReqstdOpsResp` double(255,3) DEFAULT NULL,
   `CpuTotal` double(255,3) DEFAULT NULL,
@@ -48,8 +48,8 @@ CREATE TABLE `vdbench_filesystem` (
   `CloseResp` double(255,3) DEFAULT NULL,
   `DeleteRate` double(255,3) DEFAULT NULL,
   `DeleteResp` double(255,3) DEFAULT NULL,
-  `Operationtabledate` datetime DEFAULT NULL,
-  `Testcase` varchar(255) DEFAULT NULL,
-  `Client_number` varchar(255) DEFAULT NULL,
+  `OperationTableDate` datetime DEFAULT NULL,
+  `TestCase` varchar(255) DEFAULT NULL,
+  `ClientNumber` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1260893 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

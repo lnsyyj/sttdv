@@ -1,4 +1,4 @@
-package DBs
+package dbs
 
 import (
 	"database/sql"

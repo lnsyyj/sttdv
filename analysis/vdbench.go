@@ -52,9 +52,9 @@ type SummaryData struct {
 }
 
 type SummaryFileSystemCombination struct {
-	SD	SummaryData
-	SFSI	[]SummaryFileSystemInfo
-	TestCase	string
+	SD				SummaryData
+	SFSI			[]SummaryFileSystemInfo
+	TestCase		string
 	ClientNumber	string
 }
 

@@ -1,4 +1,4 @@
-package common
+package commons
 
 func Check(e error) {
 	if e != nil {
