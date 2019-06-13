@@ -24,6 +24,10 @@ func main() {
 		ClientNumber = flag.String("ClientNumber", "", "Specify TestCaseName")
 	)
 	flag.Parse()
+	if flag.NFlag() == 0 {
+		flag.PrintDefaults()
+		return
+	}
 	fmt.Println(visualizationType, logPath, outputInterval, mariaDBDatabase, mariaDBHostIP, mariaDBPort, mariaDBTableName, mariaDBUserName, mariaDBUserPassword, TestCase, ClientNumber)
 	mariaDBInfo := dbs.MariaDBInfo{}					// MariaDB Info
 	summaryFileSystemCombination := analysis.SummaryFileSystemCombination{}	// Data Combination
