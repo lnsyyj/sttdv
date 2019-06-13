@@ -2,7 +2,7 @@ package dbs
 
 import (
 	"database/sql"
-	"fmt"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -44,9 +44,8 @@ func InsertMariadb(db *sql.DB, sqlStatement string) {
 	}
 	defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
 
-	ret, err := stmtIns.Exec()
+	_, err = stmtIns.Exec()
 	if err != nil {
 		panic("[ERROR] [InsertMariadb] [Exec] : " + err.Error())
 	}
-	fmt.Println("[INFO] [InsertMariadb] : ", ret)
 }

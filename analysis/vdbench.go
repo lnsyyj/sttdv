@@ -39,9 +39,6 @@ type SummaryFileSystemInfo struct {
 	CloseResp					string
 	DeleteRate					string
 	DeleteResp					string
-	OperationTableDate			string
-	TestCase					string
-	ClientNumber				string
 }
 
 type SummaryData struct {
@@ -54,8 +51,9 @@ type SummaryData struct {
 type SummaryFileSystemCombination struct {
 	SD				SummaryData
 	SFSI			[]SummaryFileSystemInfo
-	TestCase		string
-	ClientNumber	string
+	OperationTableDate			string
+	TestCase					string
+	ClientNumber				string
 }
 
 func (sfsc *SummaryFileSystemCombination) CheckParameterValid() {
@@ -67,7 +65,7 @@ func (sfsc *SummaryFileSystemCombination) CheckParameterValid() {
 	}
 }
 
-func AnalysisFirstData(lineInfo string, summaryData *SummaryData) {
+func AnalysisFirstData(lineInfo string, sfsc *SummaryFileSystemCombination) {
 	var timeConversion string
 	// Jun 08, 2019  interval        i/o   MB/sec   bytes   read     resp     read    write     resp     resp queue  cpu%  cpu%
 	re := regexp.MustCompile(`(\w+\s\d+,\s\d+).*`)
@@ -83,15 +81,15 @@ func AnalysisFirstData(lineInfo string, summaryData *SummaryData) {
 	re = regexp.MustCompile(`(\d+-\d+-\d+).*`)
 	match = re.FindStringSubmatch(timeConversion)
 	if len(match) > 1 {
-		summaryData.Data = match[1]
+		sfsc.SD.Data = match[1]
 	}
 }
 
-func AnalysisFirstTime(lineInfo string, summaryData *SummaryData) {
+func AnalysisFirstTime(lineInfo string, sfsc *SummaryFileSystemCombination) {
 	re := regexp.MustCompile(`([0-9][0-9]\:[0-9][0-9]\:[0-9][0-9])\.[0-9]+[\s]+[0-9]+`)
 	match := re.FindStringSubmatch(lineInfo)
 	if len(match) > 1 {
-		summaryData.Time = match[1]
+		sfsc.SD.Time = match[1]
 	}
 }
 
@@ -113,9 +111,7 @@ func AssemblingTime(summaryFileSystemCombination *SummaryFileSystemCombination) 
 	for key, _ := range summaryFileSystemCombination.SFSI {
 		m, _ := time.ParseDuration(strconv.Itoa(summaryFileSystemCombination.SD.OutputInterval * key) + "s")
 		summaryFileSystemCombination.SFSI[key].DateTime = t.Add(m).Format("2006-01-02 15:04:05")
-		//fmt.Println(val.Datetime)
 	}
-	fmt.Println(summaryFileSystemCombination.SFSI)
 }
 
 func StringTOInt(str string) int {
@@ -132,6 +128,9 @@ func AnalysisSummaryInfo(lineInfo string) SummaryFileSystemInfo {
 	// 	Outputinterval
 	outputinterval := `\d+\:\d+\:\d+\.\d+[\s]+(\d+).*`
 	result := AnalysisResult(outputinterval, lineInfo)
+	if result == "" {
+		return summaryInfo
+	}
 	summaryInfo.OutputInterval =  StringTOInt(result)
 
 	// 	ReqstdOpsRate
