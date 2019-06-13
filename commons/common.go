@@ -4,3 +4,6 @@ type ReaderData interface {
 
 }
 
+type ICheckParameterValid interface {
+	CheckParameterValid()
+}

@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"github.com/lnsyyj/SSTDV/DBs"
-	"github.com/lnsyyj/SSTDV/analysis"
-	"github.com/lnsyyj/SSTDV/common"
+	"github.com/lnsyyj/sttdv/analysis"
+	. "github.com/lnsyyj/sttdv/commons"
+	"github.com/lnsyyj/sttdv/dbs"
 	"os"
 )
 
@@ -14,7 +14,7 @@ func InitDataTimeInterval(logPath *string, summaryData *analysis.SummaryData, ou
 	file, err := os.Open(*logPath)
 	lineInfo := ""
 	defer file.Close()
-	common.Check(err)
+	Check(err)
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
@@ -29,9 +29,13 @@ func InitDataTimeInterval(logPath *string, summaryData *analysis.SummaryData, ou
 	summaryData.OutputInterval = *outputInterval
 }
 
+func CheckParameter(cp ICheckParameterValid) {
+	cp.CheckParameterValid()
+}
+
 func main() {
-	//
-	mariaDBInfo := DBs.MariaDBInfo{}
+
+	mariaDBInfo := dbs.MariaDBInfo{}
 	summaryInfo := analysis.SummaryFileSystemInfo{}
 	summaryData := analysis.SummaryData{}
 	summaryFileSystemCombination := analysis.SummaryFileSystemCombination{}
@@ -53,7 +57,7 @@ func main() {
 	flag.Parse()
 
 	// Test
-	*logPath = "D:\\SourceCode\\GitHub\\Golang\\src\\github.com\\lnsyyj\\SSTDV\\863.log"
+	*logPath = "D:\\SourceCode\\GitHub\\Golang\\src\\github.com\\lnsyyj\\sttdv\\863.log"
 	//*logPath = "E:\\summary.html"
 	mariaDBInfo.MariaHostIP = "10.121.9.23"
 	mariaDBInfo.MariaPort = "3306"
@@ -65,13 +69,13 @@ func main() {
 	summaryFileSystemCombination.TestCase = "yu"
 	summaryFileSystemCombination.ClientNumber = "jiang"
 
+	if flag.NArg() == 0 {
+		flag.PrintDefaults()
+		return
+	}
+	CheckParameter(&mariaDBInfo)
+	CheckParameter(&summaryFileSystemCombination)
 
-
-
-	//if flag.NArg() == 0 {
-	//	flag.PrintDefaults()
-	//	return
-	//}
 	fmt.Println(visualizationType, logPath, startData, outputInterval, mariaDBInfo.MariaHostIP, mariaDBInfo.MariaDatabase, mariaDBInfo.MariaTableName, mariaDBInfo.MariaUserName, mariaDBInfo.MariaUserPassword)
 	//fmt.Println(visualizationType, logPath, mysqlDatabase, mysqlTableName, mysqlHostIP, mysqlUserName, mysqlUserPassword)
 
@@ -82,7 +86,7 @@ func main() {
 	file, err := os.Open(*logPath)
 	lineInfo := ""
 	defer file.Close()
-	common.Check(err)
+	Check(err)
 	scanner := bufio.NewScanner(file)
 
 	//fmt.Println(summaryData.Conversion)
@@ -92,7 +96,7 @@ func main() {
 	for scanner.Scan() {
 		lineInfo = scanner.Text()
 		//fmt.Println(lineInfo)
-		summaryInfo, result = analysis.AnalysisSummaryInfo(lineInfo)
+		summaryInfo = analysis.AnalysisSummaryInfo(lineInfo)
 
 		if result == false {
 			continue
@@ -103,9 +107,9 @@ func main() {
 		//fmt.Println(summaryData)
 	}
 	err = scanner.Err()
-	common.Check(err)
+	Check(err)
 	analysis.AssemblingTime(&summaryFileSystemCombination)
-	db := DBs.ConnectionMariadb(&mariaDBInfo)
+	db := dbs.ConnectionMariadb(&mariaDBInfo)
 	analysis.InsertFilesystemData(db, &mariaDBInfo, &summaryFileSystemCombination)
-	DBs.CloseConnectionMariadb(db)
+	dbs.CloseConnectionMariadb(db)
 }
