@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -40,6 +41,7 @@ func CloseConnectionMariadb(db *sql.DB) {
 func InsertMariadb(db *sql.DB, sqlStatement string) {
 	stmtIns, err := db.Prepare(sqlStatement) // ? = placeholder
 	if err != nil {
+		fmt.Println(sqlStatement)
 		panic("[ERROR] [InsertMariadb] [Prepare] : " + err.Error())
 	}
 	defer stmtIns.Close() // Close the statement when we leave main() / the program terminates

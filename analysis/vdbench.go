@@ -7,6 +7,7 @@ import (
 	"github.com/lnsyyj/sttdv/dbs"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -111,6 +112,7 @@ func AssemblingTime(summaryFileSystemCombination *SummaryFileSystemCombination) 
 	for key, _ := range summaryFileSystemCombination.SFSI {
 		m, _ := time.ParseDuration(strconv.Itoa(summaryFileSystemCombination.SD.OutputInterval * key) + "s")
 		summaryFileSystemCombination.SFSI[key].DateTime = t.Add(m).Format("2006-01-02 15:04:05")
+		//fmt.Println(summaryFileSystemCombination.SFSI[key])
 	}
 }
 
@@ -125,6 +127,7 @@ func StringTOInt(str string) int {
 func AnalysisSummaryInfo(lineInfo string) SummaryFileSystemInfo {
 	summaryInfo := SummaryFileSystemInfo{}
 	// 17:17:20.077            1   39.1 143.61  24.5 7.77   0.0    0.0  0.000   39.0 143.61  0.00 39.00  39.00 1048576   0.0  0.000   0.0  0.000   0.0  0.000  18.0  6.705   1.0 77.087   0.0  0.000
+
 	// 	Outputinterval
 	outputinterval := `\d+\:\d+\:\d+\.\d+[\s]+(\d+).*`
 	result := AnalysisResult(outputinterval, lineInfo)
@@ -133,130 +136,34 @@ func AnalysisSummaryInfo(lineInfo string) SummaryFileSystemInfo {
 	}
 	summaryInfo.OutputInterval =  StringTOInt(result)
 
-	// 	ReqstdOpsRate
-	reqstdOpsRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(reqstdOpsRate, lineInfo)
-	summaryInfo.ReqstdOpsRate = result
-
-	//	ReqstdOpsResp
-	reqstdOpsResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+(\d+.\d+).*`
-	result = AnalysisResult(reqstdOpsResp, lineInfo)
-	summaryInfo.ReqstdOpsResp = result
-
-	//	CpuTotal
-	cpuTotal := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(cpuTotal, lineInfo)
-	summaryInfo.CpuTotal = result
-
-	//	CpuSys
-	cpuSys := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(cpuSys, lineInfo)
-	summaryInfo.CpuSys = result
-
-	//	ReadPct
-	readPct := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(readPct, lineInfo)
-	summaryInfo.ReadPct = result
-
-	//	ReadRate
-	readRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(readRate, lineInfo)
-	summaryInfo.ReadRate = result
-
-	//	ReadResp
-	readResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(readResp, lineInfo)
-	summaryInfo.ReadResp = result
-
-	//	WriteRate
-	writeRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(writeRate, lineInfo)
-	summaryInfo.WriteRate = result
-
-	// WriteResp
-	writeResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(writeResp, lineInfo)
-	summaryInfo.WriteResp = result
-
-	//	MbSecRead
-	mbSecRead := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(mbSecRead, lineInfo)
-	summaryInfo.MbSecRead = result
-
-	//	MbSecWrite
-	mbSecWrite := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(mbSecWrite, lineInfo)
-	summaryInfo.MbSecWrite = result
-
-	//	MbSecTotal
-	mbSecTotal := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(mbSecTotal, lineInfo)
-	summaryInfo.MbSecTotal = result
-
-	//	XferSize
-	xferSize := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+).*`
-	result = AnalysisResult(xferSize, lineInfo)
-	summaryInfo.XferSize = result
-
-	//	MkdirRate
-	mkdirRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(mkdirRate, lineInfo)
-	summaryInfo.MkdirRate = result
-
-	//	MkdirResp
-	mkdirResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(mkdirResp, lineInfo)
-	summaryInfo.MkdirResp = result
-
-	//	RmdirRate
-	rmdirRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(rmdirRate, lineInfo)
-	summaryInfo.RmdirRate = result
-
-	//	RmdirResp
-	rmdirResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(rmdirResp, lineInfo)
-	summaryInfo.RmdirResp = result
-
-	//	CreateRate
-	createRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(createRate, lineInfo)
-	summaryInfo.CreateRate = result
-
-	//	CreateResp
-	createResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(createResp, lineInfo)
-	summaryInfo.CreateResp = result
-
-	//	OpenRate
-	openRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(openRate, lineInfo)
-	summaryInfo.OpenRate = result
-
-	//	OpenResp
-	openResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(openResp, lineInfo)
-	summaryInfo.OpenResp = result
-
-	//	CloseRate
-	closeRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(closeRate, lineInfo)
-	summaryInfo.CloseRate = result
-
-	//	CloseResp
-	closeResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(closeResp, lineInfo)
-	summaryInfo.CloseResp = result
-
-	//	DeleteRate
-	deleteRate := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(deleteRate, lineInfo)
-	summaryInfo.DeleteRate = result
-
-	//	DeleteResp
-	deleteResp := `\d+\:\d+\:\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+\d+\.\d+[\s]+(\d+\.\d+).*`
-	result = AnalysisResult(deleteResp, lineInfo)
-	summaryInfo.DeleteResp = result
+	result = AnalysisResult(`\d+\:\d+\:\d+\.\d+[\s]+\d+(.*)`, lineInfo)
+	strarray := strings.Fields(strings.TrimSpace(result))
+	fmt.Println(strings.Fields(strings.TrimSpace(result)))
+	summaryInfo.ReqstdOpsRate = strarray[0]
+	summaryInfo.ReqstdOpsResp = strarray[1]
+	summaryInfo.CpuTotal = strarray[2]
+	summaryInfo.CpuSys = strarray[3]
+	summaryInfo.ReadPct = strarray[4]
+	summaryInfo.ReadRate = strarray[5]
+	summaryInfo.ReadResp = strarray[6]
+	summaryInfo.WriteRate = strarray[7]
+	summaryInfo.WriteResp = strarray[8]
+	summaryInfo.MbSecRead = strarray[9]
+	summaryInfo.MbSecWrite = strarray[10]
+	summaryInfo.MbSecTotal = strarray[11]
+	summaryInfo.XferSize = strarray[12]
+	summaryInfo.MkdirRate = strarray[13]
+	summaryInfo.MkdirResp = strarray[14]
+	summaryInfo.RmdirRate = strarray[15]
+	summaryInfo.RmdirResp = strarray[16]
+	summaryInfo.CreateRate = strarray[17]
+	summaryInfo.CreateResp = strarray[18]
+	summaryInfo.OpenRate = strarray[19]
+	summaryInfo.OpenResp = strarray[20]
+	summaryInfo.CloseRate = strarray[21]
+	summaryInfo.CloseResp = strarray[22]
+	summaryInfo.DeleteRate = strarray[23]
+	summaryInfo.DeleteResp = strarray[24]
 
 	return summaryInfo
 }
