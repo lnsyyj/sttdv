@@ -92,3 +92,8 @@ wget https://dl.grafana.com/oss/release/grafana-6.2.2-1.x86_64.rpm && sudo yum l
 
 sudo systemctl start grafana-server && sudo systemctl enable grafana-server.service && sudo systemctl status grafana-server
 ```
+
+# 
+```cassandraql
+./sttdv -ClientNumber ceph-1 -TestCase FileSystem -logPath ./863.log -mariaDBHostIP 10.121.9.23 -mariaDBDatabase cephtest -mariaDBTableName vdbench_filesystem -mariaDBUserName root -mariaDBUserPassword 1234567890 -outputinterval 1 -visualizationType vdbench
+```
