@@ -39,16 +39,6 @@ func (mi *MariaDBInfo) CheckParameter() bool {
 	}
 }
 
-
-//func (mi *MariaDBInfo) CheckParameterValid() {
-//	if mi.MariaHostIP == "" {
-//		panic("[ERROR] [CheckParameterValid] : MariaHostIP is null")
-//	}
-//
-//}
-
-
-
 func ConnectionMariadb(mariaDBInfo *MariaDBInfo) *sql.DB {
 	//   db, err := sql.Open("mysql", "<username>:<pw>@tcp(<HOST>:<port>)/<dbname>")
 	db, err := sql.Open("mysql", mariaDBInfo.MariaUserName+":"+mariaDBInfo.MariaUserPassword+"@"+"tcp"+"("+mariaDBInfo.MariaHostIP+":"+mariaDBInfo.MariaPort+")"+"/"+mariaDBInfo.MariaDatabaseName)

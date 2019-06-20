@@ -25,6 +25,7 @@ func main() {
 		outputInterval	= flag.String("outputInterval", "-1", "Specify vdbench data interval")
 		testCase = flag.String("testCase", "", "Specify TestCaseName")
 		clientNumber = flag.String("clientNumber", "", "Specify TestCaseName")
+		toolPath = flag.String("toolPath", "", "Specify toolPath")
 	)
 	flag.Parse()
 
@@ -42,14 +43,14 @@ func main() {
 
 	// Set extra Info
 	extraInfo := comst.ExtraInfo{}
-	comst.SetExtraInfo(&extraInfo, logPath, outputInterval, testCase, clientNumber)
+	comst.SetExtraInfo(&extraInfo, logPath, outputInterval, testCase, clientNumber, toolPath)
 
 	switch *visualizationType {
 	case "VdbenchFSStaticData":
-		// read file
-		com.StaticDataProcess(&analysis.SummaryFileSystemInfo{}, &mariaDBInfo, &extraInfo)
+		com.StaticDataProcess(&analysis.FSStaticSummaryData{}, &mariaDBInfo, &extraInfo)
 		fmt.Println("VdbenchFSStaticData")
 	case "VdbenchFSDynamicData":
+		com.DynamicDataProcess(&analysis.FSDynamicSummaryData{}, &mariaDBInfo, &extraInfo)
 		fmt.Println("VdbenchFSDynamicData")
 	default:
 		fmt.Println("Please specify the visualizationType !")

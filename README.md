@@ -94,5 +94,7 @@ sudo systemctl start grafana-server && sudo systemctl enable grafana-server.serv
 ```
 
 # 
-```cassandraql
-./sttdv -ClientNumber ceph-1 -TestCase FileSystem -logPath ./863.log -mariaDBHostIP 10.121.9.23 -mariaDBDatabase cephtest -mariaDBTableName vdbench_filesystem -mariaDBUserName root -mariaDBUserPassword 1234567890 -outputinterval 1 -visualizationType vdbench```
+```
+sttdv -clientNumber ceph-1 -testCase FileSystem -logPath ./summary.html -mariaD[ABHostIP 10.121.9.23 -mariaDBDatabaseName cephtest -mariaDBTableName vdbench_filesystem -mariaDBUserName root -mariaDBUserPassword 1234567890 -outputInterval 1 -visualizationType VdbenchFSStaticData
+sttdv -clientNumber ceph-1 -testCase FileSystem -logPath ./summary.html -mariaD[ABHostIP 10.121.9.23 -mariaDBDatabaseName cephtest -mariaDBTableName vdbench_filesystem -mariaDBUserName root -mariaDBUserPassword 1234567890 -visualizationType VdbenchFSStaticData
+```
