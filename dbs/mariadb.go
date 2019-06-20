@@ -3,28 +3,55 @@ package dbs
 import (
 	"database/sql"
 	"fmt"
-
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type MariaDBInfo struct {
 	MariaHostIP			string
 	MariaPort			string
-	MariaDatabase		string
+	MariaDatabaseName	string
 	MariaTableName		string
 	MariaUserName		string
 	MariaUserPassword	string
 }
 
-func (mdbi *MariaDBInfo) CheckParameterValid() {
-	if mdbi.MariaHostIP == "" {
-		panic("[ERROR] [CheckParameterValid] : MariaHostIP is null")
+func (mi *MariaDBInfo) CheckParameter() bool {
+	if mi.MariaHostIP == "" {
+		fmt.Println("MariaHostIP parameter is empty ")
+		return false
+	} else if mi.MariaPort == "" {
+		fmt.Println("MariaPort parameter is empty ")
+		return false
+	} else if mi.MariaDatabaseName == "" {
+		fmt.Println("MariaDatabaseName parameter is empty ")
+		return false
+	} else if mi.MariaTableName == "" {
+		fmt.Println("MariaTableName parameter is empty ")
+		return false
+	} else if mi.MariaUserName == "" {
+		fmt.Println("MariaUserName parameter is empty ")
+		return false
+	} else if mi.MariaUserPassword == "" {
+		fmt.Println("MariaUserPassword parameter is empty ")
+		return false
+	} else {
+		return true
 	}
 }
 
+
+//func (mi *MariaDBInfo) CheckParameterValid() {
+//	if mi.MariaHostIP == "" {
+//		panic("[ERROR] [CheckParameterValid] : MariaHostIP is null")
+//	}
+//
+//}
+
+
+
 func ConnectionMariadb(mariaDBInfo *MariaDBInfo) *sql.DB {
 	//   db, err := sql.Open("mysql", "<username>:<pw>@tcp(<HOST>:<port>)/<dbname>")
-	db, err := sql.Open("mysql", mariaDBInfo.MariaUserName+":"+mariaDBInfo.MariaUserPassword+"@"+"tcp"+"("+mariaDBInfo.MariaHostIP+":"+mariaDBInfo.MariaPort+")"+"/"+mariaDBInfo.MariaDatabase)
+	db, err := sql.Open("mysql", mariaDBInfo.MariaUserName+":"+mariaDBInfo.MariaUserPassword+"@"+"tcp"+"("+mariaDBInfo.MariaHostIP+":"+mariaDBInfo.MariaPort+")"+"/"+mariaDBInfo.MariaDatabaseName)
 	if err != nil {
 		panic("[ERROR] [ConnectionMariadb] [Open] : " + err.Error())
 	}

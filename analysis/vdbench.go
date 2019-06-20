@@ -1,10 +1,12 @@
 package analysis
 
 import (
-	"database/sql"
+	"bufio"
 	"fmt"
 	"github.com/araddon/dateparse"
+	"github.com/lnsyyj/sttdv/comst"
 	"github.com/lnsyyj/sttdv/dbs"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -14,7 +16,7 @@ import (
 type SummaryFileSystemInfo struct {
 	//Id							int64
 	DateTime					string
-	OutputInterval				int
+	OutputInterval				string
 	ReqstdOpsRate				string
 	ReqstdOpsResp				string
 	CpuTotal					string
@@ -40,58 +42,167 @@ type SummaryFileSystemInfo struct {
 	CloseResp					string
 	DeleteRate					string
 	DeleteResp					string
-}
-
-type SummaryData struct {
-	Data						string
-	Time						string
-	Conversion					string
-	OutputInterval 				int
-}
-
-type SummaryFileSystemCombination struct {
-	SD				SummaryData
-	SFSI			[]SummaryFileSystemInfo
 	OperationTableDate			string
 	TestCase					string
 	ClientNumber				string
 }
 
-func (sfsc *SummaryFileSystemCombination) CheckParameterValid() {
-	if sfsc.TestCase == "" {
-		panic("[ERROR] [CheckParameterValid] : TestCase is null")
+type SummaryFileSystemInfoFirstDate struct {
+	Date						string
+	Time						string
+}
+
+func (sfsi *SummaryFileSystemInfo) Init(mi *dbs.MariaDBInfo, extraInfo *comst.ExtraInfo) {
+
+}
+
+func (sfsi *SummaryFileSystemInfo) CheckParameter(extraInfo *comst.ExtraInfo) {
+	outputInterval, err := strconv.Atoi(extraInfo.OutputInterval)
+	if err != nil {
+		fmt.Println("Parsing OutputInterval failed")
+		return
 	}
-	if sfsc.ClientNumber == "" {
-		panic("[ERROR] [CheckParameterValid] : ClientNumber is null")
+	if outputInterval <= 0 {
+		fmt.Println("Please check the outputInterval parameter")
+		return
 	}
 }
 
-func AnalysisFirstData(lineInfo string, sfsc *SummaryFileSystemCombination) {
-	var timeConversion string
-	// Jun 08, 2019  interval        i/o   MB/sec   bytes   read     resp     read    write     resp     resp queue  cpu%  cpu%
-	re := regexp.MustCompile(`(\w+\s\d+,\s\d+).*`)
-	match := re.FindStringSubmatch(lineInfo)
-	if len(match) > 1 {
-		t, err := dateparse.ParseAny(match[1])
-		if err != nil {
-			panic("[ERROR] [AnalysisFirstData] : " + err.Error())
+func ParsingFirstData(str []string) (string, string) {
+	var reDate, reTime string
+	for _, val := range str {
+		// Jun 08, 2019  interval        i/o   MB/sec   bytes   read     resp     read    write     resp     resp queue  cpu%  cpu%
+		reDateRegularTemp := regexp.MustCompile(`(\w+\s\d+,\s\d+).*`)
+		reDateMatchTemp := reDateRegularTemp.FindStringSubmatch(val)
+		if len(reDateMatchTemp) > 1 {
+			reDate = reDateMatchTemp[1]
 		}
-		timeConversion = t.String()
+		reTimeRegularTemp := regexp.MustCompile(`([0-9][0-9]\:[0-9][0-9]\:[0-9][0-9])\.[0-9]+[\s]+[0-9]+`)
+		reTimeMatchTemp := reTimeRegularTemp.FindStringSubmatch(val)
+		if len(reTimeMatchTemp) > 1 {
+			reTime = reTimeMatchTemp[1]
+		}
+		if reDate != "" && reTime != "" {
+			break
+		}
+	}
+	return reDate, reTime
+}
+
+func (sfsi *SummaryFileSystemInfo) Process(mi *dbs.MariaDBInfo, extraInfo *comst.ExtraInfo) {
+	file, err := os.Open(extraInfo.LogPath)
+	if err != nil {
+		panic("Read File Failed")
+	}
+	defer file.Close()
+
+	fileInfo := []string{}
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		fileInfo = append(fileInfo, scanner.Text())
 	}
 
-	re = regexp.MustCompile(`(\d+-\d+-\d+).*`)
-	match = re.FindStringSubmatch(timeConversion)
-	if len(match) > 1 {
-		sfsc.SD.Data = match[1]
+	// Parsing First Data
+	sfsiFirstDate := SummaryFileSystemInfoFirstDate{}
+	sfsiFirstDate.Date, sfsiFirstDate.Time = ParsingFirstData(fileInfo)
+	fmt.Println(sfsiFirstDate.Date, sfsiFirstDate.Time)
+
+	// Parsing data
+	summaryFileSystemInfo := []SummaryFileSystemInfo{}
+	for _, val := range fileInfo {
+		re := ParsingData(val)
+		if re.OutputInterval == "" {
+			continue
+		} else {
+			summaryFileSystemInfo = append(summaryFileSystemInfo, re)
+		}
+	}
+
+	// Assembly time
+	AssemblyDateTime(extraInfo, sfsiFirstDate, summaryFileSystemInfo)
+
+	//
+	for _, val := range summaryFileSystemInfo {
+		fmt.Println(val)
+	}
+	InsertDBSummaryFileSystemInfo(extraInfo, mi, summaryFileSystemInfo)
+}
+
+func InsertDBSummaryFileSystemInfo(extraInfo *comst.ExtraInfo, mi *dbs.MariaDBInfo, sfsi []SummaryFileSystemInfo) {
+	db := dbs.ConnectionMariadb(mi)
+
+	nowDateTime := time.Now().Format("2006-01-02 15:04:05")
+	for _, val := range sfsi {
+		sqlStatement := "INSERT INTO " + mi.MariaTableName + "(Id, DateTime, OutputInterval, ReqstdOpsRate, ReqstdOpsResp, CpuTotal, CpuSys, ReadPct, ReadRate, ReadResp, " +
+			"WriteRate, WriteResp, MbSecRead, MbSecWrite, MbSecTotal, XferSize, MkdirRate, MkdirResp, RmdirRate, RmdirResp, " +
+			"CreateRate, CreateResp, OpenRate, OpenResp, CloseRate, CloseResp, DeleteRate, DeleteResp, " +
+			"OperationTableDate, TestCase, ClientNumber)" + " VALUES " +
+			"(" + "NULL, " + "\"" + val.DateTime+ "\", " + val.OutputInterval + ", " +	val.ReqstdOpsRate + ", " + val.ReqstdOpsResp + ", " + val.CpuTotal + ", " + val.CpuSys + ", " + val.ReadPct + ", " + val.ReadRate + ", " + val.ReadResp + ", " +
+			val.WriteRate + ", " + val.WriteResp + ", " + val.MbSecRead + ", " + val.MbSecWrite + ", " + val.MbSecTotal + ", " + val.XferSize + ", " + val.MkdirRate + ", " + val.MkdirResp + ", " +	val.RmdirRate + ", " + val.RmdirResp + 	", " +
+			val.CreateRate + ", " + val.CreateResp + ", " + val.OpenRate + ", " + val.OpenResp + ", " + val.CloseRate + ", " + val.CloseResp + ", " +	val.DeleteRate + ", " + val.DeleteResp + ", \"" +
+			nowDateTime + "\", \"" + extraInfo.TestCase + "\", \"" +  extraInfo.ClientNumber + "\")"
+		dbs.InsertMariadb(db, sqlStatement)
+	}
+
+	dbs.CloseConnectionMariadb(db)
+}
+
+func AssemblyDateTime(extraInfo *comst.ExtraInfo, sfsifd SummaryFileSystemInfoFirstDate, sfsi []SummaryFileSystemInfo) {
+	t, err := dateparse.ParseLocal(sfsifd.Date + " " + sfsifd.Time)
+	if err != nil {
+		panic("[ERROR] [AssemblingTime] : " + err.Error())
+	}
+	fmt.Println(t)
+	for key, _ := range sfsi {
+		m, _ := time.ParseDuration(strconv.Itoa(comst.StringToInt(extraInfo.OutputInterval) * key)+ "s")
+		sfsi[key].DateTime = t.Add(m).Format("2006-01-02 15:04:05")
 	}
 }
 
-func AnalysisFirstTime(lineInfo string, sfsc *SummaryFileSystemCombination) {
-	re := regexp.MustCompile(`([0-9][0-9]\:[0-9][0-9]\:[0-9][0-9])\.[0-9]+[\s]+[0-9]+`)
-	match := re.FindStringSubmatch(lineInfo)
+func ParsingData(str string) SummaryFileSystemInfo {
+	//Jun 08, 2019 .Interval. .ReqstdOps... ...cpu%...  read ....read..... ....write.... ..mb/sec... mb/sec .xfer.. ...mkdir.... ...rmdir.... ...create... ....open.... ...close.... ...delete...
+	//                          rate   resp total  sys   pct   rate   resp   rate   resp  read write  total    size  rate   resp  rate   resp  rate   resp  rate   resp  rate   resp  rate   resp
+	// 17:17:20.077       1     39.1 143.61  24.5 7.77   0.0    0.0  0.000   39.0 143.61  0.00 39.00  39.00 1048576   0.0  0.000   0.0  0.000   0.0  0.000  18.0  6.705   1.0 77.087   0.0  0.000
+	sfsi := SummaryFileSystemInfo{}
+	outputIntervalRegularTemp := `\d+\:\d+\:\d+\.\d+[\s]+(\d+).*`
+	re := regexp.MustCompile(outputIntervalRegularTemp)
+	match := re.FindStringSubmatch(str)
 	if len(match) > 1 {
-		sfsc.SD.Time = match[1]
+		sfsi.OutputInterval = match[1]
+	} else {
+		return sfsi
 	}
+
+	reStr := AnalysisResult(`\d+\:\d+\:\d+\.\d+[\s]+\d+(.*)`, str)
+	strarray := strings.Fields(strings.TrimSpace(reStr))
+
+	sfsi.ReqstdOpsRate = strarray[0]
+	sfsi.ReqstdOpsResp = strarray[1]
+	sfsi.CpuTotal = strarray[2]
+	sfsi.CpuSys = strarray[3]
+	sfsi.ReadPct = strarray[4]
+	sfsi.ReadRate = strarray[5]
+	sfsi.ReadResp = strarray[6]
+	sfsi.WriteRate = strarray[7]
+	sfsi.WriteResp = strarray[8]
+	sfsi.MbSecRead = strarray[9]
+	sfsi.MbSecWrite = strarray[10]
+	sfsi.MbSecTotal = strarray[11]
+	sfsi.XferSize = strarray[12]
+	sfsi.MkdirRate = strarray[13]
+	sfsi.MkdirResp = strarray[14]
+	sfsi.RmdirRate = strarray[15]
+	sfsi.RmdirResp = strarray[16]
+	sfsi.CreateRate = strarray[17]
+	sfsi.CreateResp = strarray[18]
+	sfsi.OpenRate = strarray[19]
+	sfsi.OpenResp = strarray[20]
+	sfsi.CloseRate = strarray[21]
+	sfsi.CloseResp = strarray[22]
+	sfsi.DeleteRate = strarray[23]
+	sfsi.DeleteResp = strarray[24]
+
+	return sfsi
 }
 
 func AnalysisResult(regular string, lineInfo string) string {
@@ -103,81 +214,10 @@ func AnalysisResult(regular string, lineInfo string) string {
 	return ""
 }
 
-func AssemblingTime(summaryFileSystemCombination *SummaryFileSystemCombination) {
-	t, err := dateparse.ParseLocal(summaryFileSystemCombination.SD.Conversion)
-	if err != nil {
-		panic("[ERROR] [AssemblingTime] : " + err.Error())
-	}
-	fmt.Println(t)
-	for key, _ := range summaryFileSystemCombination.SFSI {
-		m, _ := time.ParseDuration(strconv.Itoa(summaryFileSystemCombination.SD.OutputInterval * key) + "s")
-		summaryFileSystemCombination.SFSI[key].DateTime = t.Add(m).Format("2006-01-02 15:04:05")
-		//fmt.Println(summaryFileSystemCombination.SFSI[key])
-	}
-}
-
 func StringTOInt(str string) int {
 	result, err := strconv.Atoi(str)
 	if err != nil {
 		panic("[ERROR] [StringTOInt] : " + err.Error())
 	}
 	return result
-}
-
-func AnalysisSummaryInfo(lineInfo string) SummaryFileSystemInfo {
-	summaryInfo := SummaryFileSystemInfo{}
-	// 17:17:20.077            1   39.1 143.61  24.5 7.77   0.0    0.0  0.000   39.0 143.61  0.00 39.00  39.00 1048576   0.0  0.000   0.0  0.000   0.0  0.000  18.0  6.705   1.0 77.087   0.0  0.000
-
-	// 	Outputinterval
-	outputinterval := `\d+\:\d+\:\d+\.\d+[\s]+(\d+).*`
-	result := AnalysisResult(outputinterval, lineInfo)
-	if result == "" {
-		return summaryInfo
-	}
-	summaryInfo.OutputInterval =  StringTOInt(result)
-
-	result = AnalysisResult(`\d+\:\d+\:\d+\.\d+[\s]+\d+(.*)`, lineInfo)
-	strarray := strings.Fields(strings.TrimSpace(result))
-	fmt.Println(strings.Fields(strings.TrimSpace(result)))
-	summaryInfo.ReqstdOpsRate = strarray[0]
-	summaryInfo.ReqstdOpsResp = strarray[1]
-	summaryInfo.CpuTotal = strarray[2]
-	summaryInfo.CpuSys = strarray[3]
-	summaryInfo.ReadPct = strarray[4]
-	summaryInfo.ReadRate = strarray[5]
-	summaryInfo.ReadResp = strarray[6]
-	summaryInfo.WriteRate = strarray[7]
-	summaryInfo.WriteResp = strarray[8]
-	summaryInfo.MbSecRead = strarray[9]
-	summaryInfo.MbSecWrite = strarray[10]
-	summaryInfo.MbSecTotal = strarray[11]
-	summaryInfo.XferSize = strarray[12]
-	summaryInfo.MkdirRate = strarray[13]
-	summaryInfo.MkdirResp = strarray[14]
-	summaryInfo.RmdirRate = strarray[15]
-	summaryInfo.RmdirResp = strarray[16]
-	summaryInfo.CreateRate = strarray[17]
-	summaryInfo.CreateResp = strarray[18]
-	summaryInfo.OpenRate = strarray[19]
-	summaryInfo.OpenResp = strarray[20]
-	summaryInfo.CloseRate = strarray[21]
-	summaryInfo.CloseResp = strarray[22]
-	summaryInfo.DeleteRate = strarray[23]
-	summaryInfo.DeleteResp = strarray[24]
-
-	return summaryInfo
-}
-
-func InsertFilesystemData(db *sql.DB, mariaDBInfo *dbs.MariaDBInfo, sfsc *SummaryFileSystemCombination) {
-	var sqlStatement string
-	for key, _ := range sfsc.SFSI {
-		sqlStatement = "INSERT INTO " + mariaDBInfo.MariaTableName + "(Id, DateTime, OutputInterval, ReqstdOpsRate, ReqstdOpsResp, CpuTotal, CpuSys, ReadPct, ReadRate, ReadResp, WriteRate, WriteResp, MbSecRead, MbSecWrite, MbSecTotal, XferSize, MkdirRate, " +
-			"MkdirResp, RmdirRate, RmdirResp, CreateRate, CreateResp, OpenRate, OpenResp, CloseRate, CloseResp, DeleteRate, DeleteResp, OperationTableDate, TestCase, ClientNumber)" + " VALUES " +
-			"(" + "NULL, " + "\"" + sfsc.SFSI[key].DateTime+ "\", " + strconv.Itoa(sfsc.SFSI[key].OutputInterval) + ", " +	sfsc.SFSI[key].ReqstdOpsRate + ", " + sfsc.SFSI[key].ReqstdOpsResp + ", " + sfsc.SFSI[key].CpuTotal + ", " + sfsc.SFSI[key].CpuSys +
-			", " + sfsc.SFSI[key].ReadPct + ", " + sfsc.SFSI[key].ReadRate + ", " + sfsc.SFSI[key].ReadResp + ", " + sfsc.SFSI[key].WriteRate + ", " + sfsc.SFSI[key].WriteResp + ", " + sfsc.SFSI[key].MbSecRead + ", " + sfsc.SFSI[key].MbSecWrite + ", " +
-			sfsc.SFSI[key].MbSecTotal + ", " + sfsc.SFSI[key].XferSize + ", " + sfsc.SFSI[key].MkdirRate + ", " + sfsc.SFSI[key].MkdirResp + ", " +	sfsc.SFSI[key].RmdirRate + ", " + sfsc.SFSI[key].RmdirResp + ", " + sfsc.SFSI[key].CreateRate +
-			", " + sfsc.SFSI[key].CreateResp + ", " + sfsc.SFSI[key].OpenRate + ", " + sfsc.SFSI[key].OpenResp + ", " + sfsc.SFSI[key].CloseRate + ", " + sfsc.SFSI[key].CloseResp + ", " +	sfsc.SFSI[key].DeleteRate + ", " + sfsc.SFSI[key].DeleteResp +
-			", \"" + time.Now().Format("2006-01-02 15:04:05") + "\", \"" + sfsc.TestCase + "\", \"" +  sfsc.ClientNumber + "\")"
-		dbs.InsertMariadb(db, sqlStatement)
-	}
 }
