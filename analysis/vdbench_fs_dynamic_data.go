@@ -124,8 +124,9 @@ func (dsd *FSDynamicSummaryData) ParsingFirstTime(str string) string {
 }
 
 func (dsd *FSDynamicSummaryData) ParsingData(str string) SummaryFileSystemInfo {
+
 	sfsi := SummaryFileSystemInfo{}
-	outputIntervalRegularTemp := `\d+\:\d+\:\d+\.\d+[\s]+(\d+).*`
+	outputIntervalRegularTemp := `^\d+\:\d+\:\d+\.\d+[\s]+(\d+)[\s]+.*`
 	re := regexp.MustCompile(outputIntervalRegularTemp)
 	match := re.FindStringSubmatch(str)
 	if len(match) > 1 {

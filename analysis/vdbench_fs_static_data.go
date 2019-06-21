@@ -126,7 +126,7 @@ func (ssd *FSStaticSummaryData) ParsingData(str string) SummaryFileSystemInfo {
 	//                          rate   resp total  sys   pct   rate   resp   rate   resp  read write  total    size  rate   resp  rate   resp  rate   resp  rate   resp  rate   resp  rate   resp
 	// 17:17:20.077       1     39.1 143.61  24.5 7.77   0.0    0.0  0.000   39.0 143.61  0.00 39.00  39.00 1048576   0.0  0.000   0.0  0.000   0.0  0.000  18.0  6.705   1.0 77.087   0.0  0.000
 	sfsi := SummaryFileSystemInfo{}
-	outputIntervalRegularTemp := `\d+\:\d+\:\d+\.\d+[\s]+(\d+).*`
+	outputIntervalRegularTemp := `^\d+\:\d+\:\d+\.\d+[\s]+(\d+).*`
 	re := regexp.MustCompile(outputIntervalRegularTemp)
 	match := re.FindStringSubmatch(str)
 	if len(match) > 1 {
