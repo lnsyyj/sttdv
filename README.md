@@ -96,5 +96,5 @@ sudo systemctl start grafana-server && sudo systemctl enable grafana-server.serv
 # 
 ```
 sttdv -clientNumber ceph-1 -testCase FileSystem -logPath ./summary.html -mariaDBHostIP 10.121.9.23 -mariaDBDatabaseName cephtest -mariaDBTableName vdbench_filesystem -mariaDBUserName root -mariaDBUserPassword 1234567890 -outputInterval 1 -visualizationType VdbenchFSStaticData
-sttdv -clientNumber ceph-1 -testCase FileSystem -logPath ./summary.html -mariaDBHostIP 10.121.9.23 -mariaDBDatabaseName cephtest -mariaDBTableName vdbench_filesystem -mariaDBUserName root -mariaDBUserPassword 1234567890 -visualizationType VdbenchFSStaticData
+./sttdv -clientNumber ceph-1 -testCase FileSystem -mariaDBHostIP 10.121.9.23 -mariaDBDatabaseName cephtest -mariaDBTableName vdbench_filesystem -mariaDBUserName root -mariaDBUserPassword 1234567890 -visualizationType VdbenchFSDynamicData -outputInterval 1 -toolPath "/root/vdbench/vdbench -f /root/vdbench/test"
 ```

@@ -40,10 +40,11 @@ type SummaryFileSystemInfoFirstDate struct {
 }
 
 type FSStaticSummaryData struct {
-	SummaryFirstDate	SummaryFileSystemInfoFirstDate
-	SummaryInfo	[]SummaryFileSystemInfo
+	SummaryFirstDate			SummaryFileSystemInfoFirstDate
+	SummaryInfo					[]SummaryFileSystemInfo
 }
 
 type FSDynamicSummaryData struct {
-	SummaryInfo	[]SummaryFileSystemInfo
+	SummaryFirstDate			SummaryFileSystemInfoFirstDate
+	SummaryInfo					[]SummaryFileSystemInfo
 }

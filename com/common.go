@@ -28,11 +28,14 @@ func StaticDataProcess(sdp IStaticDataProcess, mi *dbs.MariaDBInfo, extraInfo *c
 }
 
 type IDynamicDataProcess interface {
+	Init()
 	CheckParameter(*comst.ExtraInfo)
 	Process(*dbs.MariaDBInfo, *comst.ExtraInfo)
 }
 
 func DynamicDataProcess(ddp IDynamicDataProcess, mi *dbs.MariaDBInfo, extraInfo *comst.ExtraInfo) {
+	ddp.Init()
 	ddp.CheckParameter(extraInfo)
 	ddp.Process(mi, extraInfo)
 }
+
