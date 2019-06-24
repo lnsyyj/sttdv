@@ -1,0 +1,677 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 4,
+  "links": [],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "MySQL",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "interval": "",
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {},
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "format": "time_series",
+          "group": [],
+          "hide": false,
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  WriteResp as value,\n  'WriteResp' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "A",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  WriteRate as value,\n  'WriteRate' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "B",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  ReadRate as value,\n  'ReadRate' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "C",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  ReadResp as value,\n  'ReadResp' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "D",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  MbSecRead as value,\n  'MbSecRead' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "E",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  MbSecWrite as value,\n  'MbSecWrite' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "F",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  MbSecTotal as value,\n  'MbSecTotal' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "G",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  MkdirRate as value,\n  'MkdirRate' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "H",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  MkdirResp as value,\n  'MkdirResp' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "I",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  RmdirRate as value,\n  'RmdirRate' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "J",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  RmdirResp as value,\n  'RmdirResp' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "K",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  CreateRate as value,\n  'CreateRate' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "L",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  CreateResp as value,\n  'CreateResp' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "M",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  OpenRate as value,\n  'OpenRate' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "N",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  OpenResp as value,\n  'OpenResp' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "O",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  CloseRate as value,\n  'CloseRate' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "P",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  CloseResp as value,\n  'CloseResp' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "Q",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  DeleteRate as value,\n  'DeleteRate' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "R",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        },
+        {
+          "format": "time_series",
+          "group": [],
+          "metricColumn": "none",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  UNIX_TIMESTAMP(DateTime) as time_sec,\n  DeleteResp as value,\n  'DeleteResp' as metric\nFROM vdbench_filesystem\nWHERE $__timeFilter(DateTime)\nORDER BY DateTime asc",
+          "refId": "S",
+          "select": [
+            [
+              {
+                "params": [
+                  "Id"
+                ],
+                "type": "column"
+              }
+            ]
+          ],
+          "table": "vdbench_filesystem",
+          "timeColumn": "DateTime",
+          "timeColumnType": "timestamp",
+          "where": [
+            {
+              "name": "$__timeFilter",
+              "params": [],
+              "type": "macro"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "vdbench文件系统实时数据",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 18,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-2h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "New dashboard Copy",
+  "uid": "zyxUfO7Zk",
+  "version": 20
+}
