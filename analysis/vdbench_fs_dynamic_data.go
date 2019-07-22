@@ -66,6 +66,8 @@ func (dsd *FSDynamicSummaryData) Process(mi *dbs.MariaDBInfo, extraInfo *comst.E
 		if pretreatment == true {
 			if CheckPretreatment(line) == false {
 				pretreatment = false
+				dsd.SummaryFirstDate.Date = dsd.ParsingFirstDate(line)
+				dsd.SummaryFirstDate.Time = dsd.ParsingFirstTime(line)
 			}
 		}
 		if pretreatment == false {
@@ -78,13 +80,8 @@ func (dsd *FSDynamicSummaryData) Process(mi *dbs.MariaDBInfo, extraInfo *comst.E
 		if dsd.SummaryFirstDate.Date == "" {
 			dsd.SummaryFirstDate.Date = dsd.ParsingFirstDate(line)
 		}
-		//if sfsi.OutputInterval == "1" {
-		//	dsd.SummaryFirstDate.Date = dsd.ParsingFirstDate(line)
-		//}
-		//if dsd.SummaryFirstDate.Time == "" {
-		//	dsd.SummaryFirstDate.Time = dsd.ParsingFirstTime(line)
-		//}
-		if sfsi.OutputInterval == "1" {
+
+		if dsd.SummaryFirstDate.Time == "" {
 			dsd.SummaryFirstDate.Time = dsd.ParsingFirstTime(line)
 		}
 
