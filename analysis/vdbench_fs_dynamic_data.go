@@ -35,7 +35,7 @@ func (dsd *FSDynamicSummaryData) CheckParameter(extraInfo *comst.ExtraInfo) {
 }
 
 func CheckPretreatment(str string) bool {
-	reDateRegularTemp := regexp.MustCompile(`^\d+\:\d+\:\d+\.\d+[\s]+Miscellaneous statistics.*`)
+	reDateRegularTemp := regexp.MustCompile(`^\d+\:\d+\:\d+\.\d+\s+(Miscellaneous statistics).*`)
 	reDateMatchTemp := reDateRegularTemp.FindStringSubmatch(str)
 	if len(reDateMatchTemp) > 1 {
 		return false
@@ -64,12 +64,12 @@ func (dsd *FSDynamicSummaryData) Process(mi *dbs.MariaDBInfo, extraInfo *comst.E
 		sfsi := dsd.ParsingData(line)
 		
 		if pretreatment == true {
-			if CheckPretreatment(line) {
-				sfsi.Pretreatment = ""
-			} else {
+			if CheckPretreatment(line) == false {
 				pretreatment = false
-				sfsi.Pretreatment = "no"
 			}
+		}
+		if pretreatment == false {
+			sfsi.Pretreatment = "no"
 		}
 		
 		fmt.Print(line)
