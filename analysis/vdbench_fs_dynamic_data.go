@@ -74,7 +74,11 @@ func (dsd *FSDynamicSummaryData) Process(mi *dbs.MariaDBInfo, extraInfo *comst.E
 		
 		fmt.Print(line)
 		//fmt.Println(line)
-		if dsd.SummaryFirstDate.Date == "" {
+
+		//if dsd.SummaryFirstDate.Date == "" {
+		//	dsd.SummaryFirstDate.Date = dsd.ParsingFirstDate(line)
+		//}
+		if sfsi.OutputInterval == "1" {
 			dsd.SummaryFirstDate.Date = dsd.ParsingFirstDate(line)
 		}
 		if dsd.SummaryFirstDate.Time == "" {
