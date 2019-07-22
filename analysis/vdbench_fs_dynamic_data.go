@@ -106,7 +106,7 @@ func (dsd *FSDynamicSummaryData) InsertDBSummaryFileSystemInfo(extraInfo *comst.
 		"(" + "NULL, " + "\"" + sfsi.DateTime+ "\", " + sfsi.OutputInterval + ", " +	sfsi.ReqstdOpsRate + ", " + sfsi.ReqstdOpsResp + ", " + sfsi.CpuTotal + ", " + sfsi.CpuSys + ", " + sfsi.ReadPct + ", " + sfsi.ReadRate + ", " + sfsi.ReadResp + ", " +
 		sfsi.WriteRate + ", " + sfsi.WriteResp + ", " + sfsi.MbSecRead + ", " + sfsi.MbSecWrite + ", " + sfsi.MbSecTotal + ", " + sfsi.XferSize + ", " + sfsi.MkdirRate + ", " + sfsi.MkdirResp + ", " +	sfsi.RmdirRate + ", " + sfsi.RmdirResp + 	", " +
 		sfsi.CreateRate + ", " + sfsi.CreateResp + ", " + sfsi.OpenRate + ", " + sfsi.OpenResp + ", " + sfsi.CloseRate + ", " + sfsi.CloseResp + ", " +	sfsi.DeleteRate + ", " + sfsi.DeleteResp + ", \"" +
-		nowDateTime + "\", \"" + extraInfo.TestCase + "\", \"" +  extraInfo.ClientNumber + sfsi.Pretreatment + "\")"
+		nowDateTime + "\", \"" + extraInfo.TestCase + "\", \"" +  extraInfo.ClientNumber + "\", \"" + sfsi.Pretreatment + "\")"
 	dbs.InsertMariadb(db, sqlStatement)
 
 	dbs.CloseConnectionMariadb(db)
