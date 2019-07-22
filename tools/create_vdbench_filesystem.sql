@@ -51,5 +51,6 @@ CREATE TABLE `vdbench_filesystem` (
   `OperationTableDate` datetime DEFAULT NULL,
   `TestCase` varchar(255) DEFAULT NULL,
   `ClientNumber` varchar(255) DEFAULT NULL,
+  `Pretreatment` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

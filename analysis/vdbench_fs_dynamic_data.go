@@ -102,11 +102,11 @@ func (dsd *FSDynamicSummaryData) InsertDBSummaryFileSystemInfo(extraInfo *comst.
 	sqlStatement := "INSERT INTO " + mi.MariaTableName + "(Id, DateTime, OutputInterval, ReqstdOpsRate, ReqstdOpsResp, CpuTotal, CpuSys, ReadPct, ReadRate, ReadResp, " +
 		"WriteRate, WriteResp, MbSecRead, MbSecWrite, MbSecTotal, XferSize, MkdirRate, MkdirResp, RmdirRate, RmdirResp, " +
 		"CreateRate, CreateResp, OpenRate, OpenResp, CloseRate, CloseResp, DeleteRate, DeleteResp, " +
-		"OperationTableDate, TestCase, ClientNumber)" + " VALUES " +
+		"OperationTableDate, TestCase, ClientNumber, Pretreatment)" + " VALUES " +
 		"(" + "NULL, " + "\"" + sfsi.DateTime+ "\", " + sfsi.OutputInterval + ", " +	sfsi.ReqstdOpsRate + ", " + sfsi.ReqstdOpsResp + ", " + sfsi.CpuTotal + ", " + sfsi.CpuSys + ", " + sfsi.ReadPct + ", " + sfsi.ReadRate + ", " + sfsi.ReadResp + ", " +
 		sfsi.WriteRate + ", " + sfsi.WriteResp + ", " + sfsi.MbSecRead + ", " + sfsi.MbSecWrite + ", " + sfsi.MbSecTotal + ", " + sfsi.XferSize + ", " + sfsi.MkdirRate + ", " + sfsi.MkdirResp + ", " +	sfsi.RmdirRate + ", " + sfsi.RmdirResp + 	", " +
 		sfsi.CreateRate + ", " + sfsi.CreateResp + ", " + sfsi.OpenRate + ", " + sfsi.OpenResp + ", " + sfsi.CloseRate + ", " + sfsi.CloseResp + ", " +	sfsi.DeleteRate + ", " + sfsi.DeleteResp + ", \"" +
-		nowDateTime + "\", \"" + extraInfo.TestCase + "\", \"" +  extraInfo.ClientNumber + "\")"
+		nowDateTime + "\", \"" + extraInfo.TestCase + "\", \"" +  extraInfo.ClientNumber + sfsi.Pretreatment + "\")"
 	dbs.InsertMariadb(db, sqlStatement)
 
 	dbs.CloseConnectionMariadb(db)
