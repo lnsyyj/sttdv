@@ -34,6 +34,15 @@ func (dsd *FSDynamicSummaryData) CheckParameter(extraInfo *comst.ExtraInfo) {
 	}
 }
 
+func CheckPretreatment(str string) bool {
+	reDateRegularTemp := regexp.MustCompile(`^\d+\:\d+\:\d+\.\d+[\s]+Miscellaneous statistics.*`)
+	reDateMatchTemp := reDateRegularTemp.FindStringSubmatch(str)
+	if len(reDateMatchTemp) > 1 {
+		return false
+	}
+	return true
+}
+
 func (dsd *FSDynamicSummaryData) Process(mi *dbs.MariaDBInfo, extraInfo *comst.ExtraInfo) {
 	cmdArgs := strings.Fields(extraInfo.ToolPath)
 	cmd := exec.Command(cmdArgs[0], cmdArgs[1:len(cmdArgs)]...)
@@ -44,12 +53,25 @@ func (dsd *FSDynamicSummaryData) Process(mi *dbs.MariaDBInfo, extraInfo *comst.E
 	}
 	cmd.Start()
 
+	pretreatment := true
+
 	reader := bufio.NewReader(stdout)
 	for {
 		line, err2 := reader.ReadString('\n')
 		if err2 != nil || io.EOF == err2 {
 			break
 		}
+		sfsi := dsd.ParsingData(line)
+		
+		if pretreatment == true {
+			if CheckPretreatment(line) {
+				sfsi.Pretreatment = ""
+			} else {
+				pretreatment = false
+				sfsi.Pretreatment = "no"
+			}
+		}
+		
 		fmt.Print(line)
 		//fmt.Println(line)
 		if dsd.SummaryFirstDate.Date == "" {
@@ -59,7 +81,6 @@ func (dsd *FSDynamicSummaryData) Process(mi *dbs.MariaDBInfo, extraInfo *comst.E
 			dsd.SummaryFirstDate.Time = dsd.ParsingFirstTime(line)
 		}
 
-		sfsi := dsd.ParsingData(line)
 		if sfsi.OutputInterval != "" {
 			sfsi.DateTime = dsd.CalculationTime(extraInfo, &sfsi)
 			dsd.InsertDBSummaryFileSystemInfo(extraInfo, mi, sfsi)

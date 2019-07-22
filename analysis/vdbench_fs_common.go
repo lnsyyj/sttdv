@@ -32,6 +32,7 @@ type SummaryFileSystemInfo struct {
 	OperationTableDate			string
 	TestCase					string
 	ClientNumber				string
+	Pretreatment				string
 }
 
 type SummaryFileSystemInfoFirstDate struct {
